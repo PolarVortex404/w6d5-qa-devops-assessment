@@ -1,4 +1,13 @@
 const express = require('express')
+const Rollbar = require('rollbar')
+const rollbar = new Rollbar({
+    accessToken: '8c0c4acdc99f4c5292fcd860792a54d9',
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    payload: {
+        code_version: '1.0.0'
+    }
+})
 const path = require('path')
 const cors = require('cors')
 const app = express()
@@ -16,7 +25,8 @@ app.get('/', (req,res) => {
 
 app.get('/api/robots', (req, res) => {
     try {
-        res.status(200).send(botsArr)
+        rollbar.log('getting bots')
+        res.status(200).send(bots)
     } catch (error) {
         console.log('ERROR GETTING BOTS', error)
         res.sendStatus(400)
@@ -25,6 +35,7 @@ app.get('/api/robots', (req, res) => {
 
 app.get('/api/robots/five', (req, res) => {
     try {
+        rollbar.log('drawing 5')
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
         let compDuo = shuffled.slice(6, 8)
@@ -37,6 +48,7 @@ app.get('/api/robots/five', (req, res) => {
 
 app.post('/api/duel', (req, res) => {
     try {
+        rollbar.log('robot duel')
         // getting the duos from the front end
         let {compDuo, playerDuo} = req.body
 
